@@ -75,5 +75,9 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[z80-macroasm]": {
+    "editor.insertSpaces": false,
+    "editor.tabSize": 8
   }
 }
