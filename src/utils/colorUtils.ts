@@ -73,7 +73,7 @@ export const colorUtils = {
       }
     });
 
-    return num;
+    return num === 0 ? 1 : num;
   },
 
   /**
