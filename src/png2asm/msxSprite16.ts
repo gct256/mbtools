@@ -14,14 +14,21 @@ export const msxSprite16 = async (
       lines.push(
         asmUtils.comment(`(${row / 2}, ${col / 2}) - upper left`),
         ...asmUtils.toDb2(
-          ...patternMap.getPattern(col, row, patternHeight, binaryConverter),
+          ...patternMap.getPattern(
+            col,
+            row,
+            0,
+            patternHeight - 1,
+            binaryConverter,
+          ),
         ),
         asmUtils.comment(`(${row / 2}, ${col / 2}) - lower left`),
         ...asmUtils.toDb2(
           ...patternMap.getPattern(
             col,
             row + 1,
-            patternHeight,
+            0,
+            patternHeight - 1,
             binaryConverter,
           ),
         ),
@@ -30,7 +37,8 @@ export const msxSprite16 = async (
           ...patternMap.getPattern(
             col + 1,
             row,
-            patternHeight,
+            0,
+            patternHeight - 1,
             binaryConverter,
           ),
         ),
@@ -39,7 +47,8 @@ export const msxSprite16 = async (
           ...patternMap.getPattern(
             col + 1,
             row + 1,
-            patternHeight,
+            0,
+            patternHeight - 1,
             binaryConverter,
           ),
         ),

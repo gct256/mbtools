@@ -138,14 +138,15 @@ export class PatternMap {
   public getPattern(
     col: number,
     row: number,
-    rowCount: number,
+    rowStart: number,
+    rowEnd: number,
     converter: ColorConverter<boolean>,
   ): number[] {
     const ox = col * this.patternWidth;
     const oy = row * this.patternHeight;
     const result: number[] = [];
 
-    for (let y = 0; y < rowCount; y += 1) {
+    for (let y = rowStart; y <= rowEnd; y += 1) {
       let line = 0;
       for (let x = 0; x < this.patternWidth; x += 1) {
         line *= 2;

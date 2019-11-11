@@ -25,19 +25,20 @@ export const msxScreen2 = async (
           1,
           converter,
         );
+
         // 二色に正規化
         const c0 = c[0];
-        const c1 = c.find((x) => x !== c0) || 0;
+        const c1 = c.find((x) => x !== c0) || 1;
 
         colors.push(c0 * 16 + c1);
 
-        // 最初の色でパターン化
         patterns.push(
           ...patternMap.getPattern(
             col,
             row,
-            1,
-            (color) => converter(color) === c0,
+            y,
+            y,
+            (color) => converter(color) !== c1,
           ),
         );
       }

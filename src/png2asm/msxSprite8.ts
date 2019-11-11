@@ -14,7 +14,13 @@ export const msxSprite8 = async (
       lines.push(
         asmUtils.comment(`(${col}, ${row})`),
         ...asmUtils.toDb2(
-          ...patternMap.getPattern(col, row, patternHeight, binaryConverter),
+          ...patternMap.getPattern(
+            col,
+            row,
+            0,
+            patternHeight - 1,
+            binaryConverter,
+          ),
         ),
       );
     }
