@@ -1,0 +1,24 @@
+import { PatternMap } from '../modules/PatternMap';
+import { asmUtils } from '../utils/asmUtils';
+
+import { Png2AsmResult, binaryConverter } from './utils';
+
+export const msxSprite8 = async (
+  patternMap: PatternMap,
+): Promise<Png2AsmResult> => {
+  const { patternHeight, colCount, rowCount } = patternMap;
+  const lines: string[] = [];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let col = 0; col < colCount; col += 1) {
+      lines.push(
+        asmUtils.comment(`(${col}, ${row})`),
+        ...asmUtils.toDb2(
+          ...patternMap.getPattern(col, row, patternHeight, binaryConverter),
+        ),
+      );
+    }
+  }
+
+  return { lines };
+};

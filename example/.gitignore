@@ -1,0 +1,6 @@
+*.js.inc
+*.png.inc
+*.png.*.inc
+*.rom
+*.tmp
+*.sym
