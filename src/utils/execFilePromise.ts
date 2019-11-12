@@ -1,6 +1,11 @@
 import { execFile } from 'child_process';
 
-/** promisified child_process.execFile */
+/**
+ * Promisified child_process.execFile.
+ *
+ * @param file
+ * @param args
+ */
 export const execFilePromise = async (
   file: string,
   args: string[],

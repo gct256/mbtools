@@ -1,14 +1,13 @@
 import { RGBA } from 'jimp';
 
-/** 色変換関数 */
+/** Function of color conversion. */
 export type ColorConverter<T> = (color: RGBA) => T;
 
 /*
-色の資料:
 - https://en.wikipedia.org/wiki/List_of_8-bit_computer_hardware_graphics
 */
 
-/** TMS9918の色  */
+/** Color of TMS9918 */
 const TMS9918ColorSet: RGBA[] = [
   { r: 0x00, g: 0x00, b: 0x00, a: 0xff },
   { r: 0x00, g: 0x00, b: 0x00, a: 0xff },
@@ -28,7 +27,7 @@ const TMS9918ColorSet: RGBA[] = [
   { r: 0xff, g: 0xff, b: 0xff, a: 0xff },
 ];
 
-/** TODO: V9938の初期色 */
+/** [TODO] Colors of V9938. */
 const V9938ColorSet: RGBA[] = [
   { r: 0x00, g: 0x00, b: 0x00, a: 0xff },
   { r: 0x00, g: 0x00, b: 0x00, a: 0xff },
@@ -48,17 +47,24 @@ const V9938ColorSet: RGBA[] = [
   { r: 0x00, g: 0x00, b: 0x00, a: 0xff },
 ];
 
+/**
+ * Get color difference factor.
+ *
+ * @param c0
+ * @param c1
+ */
 const getColorDiff = (c0: RGBA, c1: RGBA): number =>
   (c0.r - c1.r) ** 2 + (c0.g - c1.g) ** 2 + (c0.b - c1.b) ** 2;
 
+/** Utilities of color. */
 export const colorUtils = {
   TMS9918ColorSet,
   V9938ColorSet,
 
   /**
-   * 一番近い色コードを返す
+   * Get nealy color code.
    *
-   * @param color 色
+   * @param color
    */
   getNealyColorCode(color: RGBA, colorSet: RGBA[]): number {
     let num = 0;
@@ -77,9 +83,11 @@ export const colorUtils = {
   },
 
   /**
-   * しきい値による簡易二値化
+   * Get binary color using threshold.
    *
-   * @param rgba 色
+   * @param rgba
+   * @param threshold RGB threshold. (0-255)
+   * @param alphaThreshold alpha channel threshold. (0-255)
    */
   getBinaryColor(
     { r, g, b, a }: RGBA,

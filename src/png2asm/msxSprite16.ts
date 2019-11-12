@@ -3,6 +3,11 @@ import { asmUtils } from '../utils/asmUtils';
 
 import { Png2AsmResult, binaryConverter } from './utils';
 
+/**
+ * Convert bitmap to 16x16 bit patterns.
+ *
+ * @param patternMap
+ */
 export const msxSprite16 = async (
   patternMap: PatternMap,
 ): Promise<Png2AsmResult> => {

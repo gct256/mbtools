@@ -2,35 +2,34 @@
 
 const TAB = '\t';
 
+/** Utilities of assembler. */
 export const asmUtils = {
   /**
-   * コメント
+   * Build assembler comment.
    *
-   * @param comment コメント
+   * @param comment
    */
   comment(comment: string): string {
     return `\t; ${comment}`;
   },
 
   /**
-   * 2進数文字列に変換
-   * 幅に合わせて AND で調整される
+   * Convert number to binary string.
    *
-   * @param value 値
-   * @param size 幅
+   * @param value
+   * @param bitWidth Bit width.
    */
-  toBinString(value: number, size = 8): string {
-    const mask = (1 << 8) - 1;
+  toBinString(value: number, bitWidth = 8): string {
+    const mask = (1 << bitWidth) - 1;
 
-    return (value & mask).toString(2).padStart(size, '0');
+    return (value & mask).toString(2).padStart(bitWidth, '0');
   },
 
   /**
-   * 16進数文字列に変換
-   * 幅に合わせて AND で調整される
+   * Convert number to HEX string.
    *
-   * @param value 値
-   * @param size 幅
+   * @param value
+   * @param size Width.
    */
   toHexString(value: number, size = 2): string {
     const mask = (1 << (size * 4)) - 1;
@@ -39,18 +38,18 @@ export const asmUtils = {
   },
 
   /**
-   * 数値を２進数での DB 疑似命令に変換
+   * Build DB directive using binary string.
    *
-   * @param values 値
+   * @param values
    */
   toDb2(...values: number[]): string[] {
     return values.map((v) => `${TAB}db ${asmUtils.toBinString(v)}b`);
   },
 
   /**
-   * 数値を DB 疑似命令に変換
+   * Build DB directive using HEX string.
    *
-   * @param values 値
+   * @param values
    */
   toDb(...values: number[]): string {
     return `${TAB}db ${values
@@ -59,9 +58,9 @@ export const asmUtils = {
   },
 
   /**
-   * 数値を複数行の DB 疑似命令に変換
+   * Build multi row DB directive using HEX string.
    *
-   * @param values 値
+   * @param values
    */
   toDbRows(countPerRow: number, ...values: number[]): string[] {
     const { length } = values;
@@ -75,18 +74,18 @@ export const asmUtils = {
   },
 
   /**
-   *  文字列を DB 疑似命令に変換
+   *  Build DB directive from string.
    *
-   * @param value 値
+   * @param value
    */
   toDbString(value: string): string {
     return `${TAB}db '${value.replace(/'/g, "''")}'`;
   },
 
   /**
-   * 数値を DW 疑似命令に変換
+   * Build DB directive using HEX string.
    *
-   * @param values 値
+   * @param values
    */
   toDw(...values: number[]): string {
     return `${TAB}dw ${values
@@ -95,9 +94,9 @@ export const asmUtils = {
   },
 
   /**
-   * 数値を複数行の DW 疑似命令に変換
+   * Build multi row DW directive using HEX string.
    *
-   * @param values 値
+   * @param values
    */
   toDwRows(countPerRow: number, ...values: number[]): string[] {
     const { length } = values;

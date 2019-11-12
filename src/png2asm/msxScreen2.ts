@@ -6,6 +6,11 @@ import { colorUtils } from '../utils/colorUtils';
 
 import { Png2AsmResult } from './utils';
 
+/**
+ * Convert bitmap to 8x8 bit patterns and 8x8 color data.
+ *
+ * @param patternMap
+ */
 export const msxScreen2 = async (
   patternMap: PatternMap,
 ): Promise<Png2AsmResult> => {

@@ -6,9 +6,9 @@ import { asmUtils } from '../utils/asmUtils';
 import { Conf } from '../modules/Conf';
 
 /**
- * JavaScriptのデータをアセンブラソース化する
+ * Convert JavaScript data to assembler source.
  *
- * @param data データ
+ * @param data
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convert = (data: any): string[] => {
@@ -49,6 +49,9 @@ const convert = (data: any): string[] => {
   return [];
 };
 
+/**
+ * Implementaion of CLI Command: js2asm
+ */
 export const js2asm = async (conf: Conf, filePath: string): Promise<void> => {
   const aPath = path.resolve(filePath);
 

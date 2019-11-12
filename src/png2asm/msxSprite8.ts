@@ -3,6 +3,11 @@ import { asmUtils } from '../utils/asmUtils';
 
 import { Png2AsmResult, binaryConverter } from './utils';
 
+/**
+ * Convert bitmap to 8x8 bit patterns.
+ *
+ * @param patternMap
+ */
 export const msxSprite8 = async (
   patternMap: PatternMap,
 ): Promise<Png2AsmResult> => {

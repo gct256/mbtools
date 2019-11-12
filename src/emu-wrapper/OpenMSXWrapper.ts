@@ -8,9 +8,9 @@ import { EmuWrapper } from './EmuWrapper';
 const firstReply = '<openmsx-output>\x0a';
 
 /**
- * 結果を文字列化
+ * Convert openmsx result to string.
  *
- * @param result 結果
+ * @param result
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convertResult = (result: any): string => {
@@ -21,29 +21,12 @@ const convertResult = (result: any): string => {
   return `${result}`;
 };
 
-/** OpenMSXラッパークラス */
+/** Emulator wrapper for openmsx. */
 export class OpenMSXWrapper extends EmuWrapper {
-  public readonly name: string = 'openmsx';
-
   private openmsxPath = '';
   private process: ChildProcess | undefined;
 
-  public get stdin(): Writable {
-    if (this.process === undefined) throw new Error('not connected.');
-
-    if (this.process.stdin === null) throw new Error('stdin not found.');
-
-    return this.process.stdin;
-  }
-
-  public get stdout(): Readable {
-    if (this.process === undefined) throw new Error('not connected.');
-
-    if (this.process.stdout === null) throw new Error('stdout not found.');
-
-    return this.process.stdout;
-  }
-
+  /** @overwrite */
   public async initialize(
     filePath: string,
     onClose: () => void,
@@ -73,6 +56,7 @@ export class OpenMSXWrapper extends EmuWrapper {
     });
   }
 
+  /** @overwrite */
   public async close(): Promise<void> {
     if (this.process) {
       this.process.kill();
@@ -80,12 +64,14 @@ export class OpenMSXWrapper extends EmuWrapper {
     }
   }
 
+  /** @overwrite */
   public async boot(): Promise<void> {
     await this.send('exta debugdevice');
     await this.send('set renderer SDL');
     await this.send('set power on');
   }
 
+  /** @overwrite */
   public async start(cart: string): Promise<void> {
     await this.send('set power off');
     await this.send(`carta ${cart}`);
@@ -93,10 +79,28 @@ export class OpenMSXWrapper extends EmuWrapper {
     await this.send('set power on');
   }
 
+  /** Getter of stdin. */
+  private get stdin(): Writable {
+    if (this.process === undefined) throw new Error('not connected.');
+
+    if (this.process.stdin === null) throw new Error('stdin not found.');
+
+    return this.process.stdin;
+  }
+
+  /** Getter of stdout. */
+  private get stdout(): Readable {
+    if (this.process === undefined) throw new Error('not connected.');
+
+    if (this.process.stdout === null) throw new Error('stdout not found.');
+
+    return this.process.stdout;
+  }
+
   /**
-   * openmsxにコマンドを送る
+   * Send command to openmsx.
    *
-   * @param command コマンド
+   * @param command
    */
   private async send(command: string): Promise<string> {
     return new Promise((resolve: (result: string) => void) => {

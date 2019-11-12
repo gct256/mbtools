@@ -8,16 +8,33 @@ import { Conf } from '../modules/Conf';
 import { OpenMSXWrapper } from '../emu-wrapper/OpenMSXWrapper';
 import { EmuWrapper } from '../emu-wrapper/EmuWrapper';
 
+/**
+ * Get emulator wrapper object for emulator type.
+ *
+ * @param type emulator type.
+ */
 const getEmuWrapper = (type: string): EmuWrapper => {
   if (type === 'openmsx') return new OpenMSXWrapper();
 
   throw new Error(`unsupported emulator type: ${type}`);
 };
 
+/**
+ * Run make.
+ *
+ * @param task task name.
+ */
 const make = async (task: string): Promise<void> => {
   spawn('make', [task]);
 };
 
+/**
+ * Callback when file updated.
+ *
+ * @param filePath
+ * @param conf  configuration
+ * @param wrapper emulator wrapper
+ */
 const update = async (
   filePath: string,
   conf: Conf,
@@ -32,6 +49,11 @@ const update = async (
   }
 };
 
+/**
+ * Implementaion of CLI Command: shrink
+ *
+ * @param conf configuration.
+ */
 export const watch = async (conf: Conf): Promise<void> => {
   await make('all');
 

@@ -8,6 +8,7 @@ import { shrink } from './commands/shrink';
 import { config } from './commands/config';
 import { Conf, CONF_FILE_NAME } from './modules/Conf';
 
+/** CLI Commands. */
 enum Command {
   CONFIG = 'config',
   SETUP = 'setup',
@@ -17,6 +18,9 @@ enum Command {
   SHRINK = 'shrink',
 }
 
+/**
+ * Main handler of CLI.
+ */
 const cliMain = async (): Promise<void> => {
   const args = yargs
     .locale('en')

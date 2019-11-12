@@ -3,33 +3,33 @@ import Jimp, { RGBA } from 'jimp';
 import { ColorConverter } from '../utils/colorUtils';
 
 /**
- * パターンを扱うためのビットマップクラス
+ * Bitmap image for pattern.
  */
 export class PatternMap {
-  /** 列数 */
+  /** Column count. */
   public readonly colCount: number;
-  /** 行数 */
+  /** Row count. */
   public readonly rowCount: number;
-  /** パターンの幅 */
+  /** Width of pattern. */
   public readonly patternWidth: number;
-  /** パターンの高さ */
+  /** Height of pattern. */
   public readonly patternHeight: number;
-  /** 画像の幅 */
+  /** Bitmap width. */
   public readonly width: number;
-  /** 画像の高さ */
+  /** Bitmap height */
   public readonly height: number;
 
   private readonly emptyValue: RGBA;
   private readonly data: RGBA[];
 
   /**
-   * コンストラクタ
+   * Create PatternMap.
    *
-   * @param colCount 列数
-   * @param rowCount 行数
-   * @param patternWidth パターンの幅
-   * @param patternHeight パターンの高さ
-   * @param emptyValue 初期値および範囲外の値
+   * @param colCount Column count.
+   * @param rowCount Row count.
+   * @param patternWidth Width of pattern.
+   * @param patternHeight Height of pattern.
+   * @param emptyValue Fallback color value. For initial, out of bound and illegal coordinate.
    */
   private constructor(
     colCount: number,
@@ -68,11 +68,11 @@ export class PatternMap {
   }
 
   /**
-   * 画像を読み込む
+   * Create PatternMap object from image file.
    *
-   * @param filePath ファイルパス
-   * @param patternWidth パターンの幅
-   * @param patternHeight パターンの高さ
+   * @param filePath
+   * @param patternWidth Width of pattern.
+   * @param patternHeight Height of pattern.
    */
   public static async createFromFile(
     filePath: string,
@@ -105,9 +105,10 @@ export class PatternMap {
   }
 
   /**
-   * 指定ピクセルの値を取得 / 範囲外はemptyValueを返す
-   * @param x X座標
-   * @param y Y座標
+   * Get color from location.
+   *
+   * @param x
+   * @param y
    */
   public getPixel(x: number, y: number): RGBA {
     const index = this.getIndex(x, y);
@@ -116,11 +117,11 @@ export class PatternMap {
   }
 
   /**
-   * 指定ピクセルに値を設定
+   * Set color to location.
    *
-   * @param x X座標
-   * @param y Y座標
-   * @param color 色
+   * @param x
+   * @param y
+   * @param color
    */
   public putPixel(x: number, y: number, color: RGBA): void {
     const index = this.getIndex(x, y);
@@ -129,24 +130,26 @@ export class PatternMap {
   }
 
   /**
-   * 任意の位置のビットマップパターンを返す
+   * Get bitmap pattern.
    *
-   * @param col 列番号
-   * @param row 行番号
-   * @param converter 色変換関数
+   * @param col Number of columns.
+   * @param row Number of rows.
+   * @param start Start offset.
+   * @param end End offset.
+   * @param converter Callback of color conversion.
    */
   public getPattern(
     col: number,
     row: number,
-    rowStart: number,
-    rowEnd: number,
+    start: number,
+    end: number,
     converter: ColorConverter<boolean>,
   ): number[] {
     const ox = col * this.patternWidth;
     const oy = row * this.patternHeight;
     const result: number[] = [];
 
-    for (let y = rowStart; y <= rowEnd; y += 1) {
+    for (let y = start; y <= end; y += 1) {
       let line = 0;
       for (let x = 0; x < this.patternWidth; x += 1) {
         line *= 2;
@@ -160,12 +163,12 @@ export class PatternMap {
   }
 
   /**
-   * 指定位置・サイズに含まれる色を配列で返す
+   * Get colors in area.
    *
-   * @param x X位置
-   * @param y Y位置
-   * @param width 幅
-   * @param height 高さ
+   * @param x
+   * @param y
+   * @param width
+   * @param height
    */
   public getColors(
     x: number,
@@ -185,7 +188,12 @@ export class PatternMap {
     return colors;
   }
 
-  // 指定座標のデータ位置を返す
+  /**
+   * Get index of location.
+   *
+   * @param x
+   * @param y
+   */
   private getIndex(x: number, y: number): number {
     const ix = Number.isFinite(x) ? Math.floor(x) : -1;
     const iy = Number.isFinite(y) ? Math.floor(y) : -1;

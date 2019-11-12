@@ -2,6 +2,9 @@ import inquirer from 'inquirer';
 
 import { Conf, CONF_FILE_NAME, ConfData } from '../modules/Conf';
 
+/**
+ * Implementaion of CLI Command: config
+ */
 export const config = async (): Promise<void> => {
   const conf = await Conf.load();
 

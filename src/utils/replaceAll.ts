@@ -1,3 +1,10 @@
+/**
+ * Replace all.
+ *
+ * @param value
+ * @param search
+ * @param replace
+ */
 export const replaceAll = (
   value: string,
   search: string,

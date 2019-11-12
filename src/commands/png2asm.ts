@@ -9,6 +9,11 @@ import { Png2AsmHandler } from '../png2asm/utils';
 import { msxScreen2 } from '../png2asm/msxScreen2';
 import { Conf } from '../modules/Conf';
 
+/**
+ * Get conversion handler from file name.
+ *
+ * @param name file name
+ */
 const getHandler = (name: string): Png2AsmHandler => {
   const n = name.toLowerCase();
 
@@ -21,6 +26,9 @@ const getHandler = (name: string): Png2AsmHandler => {
   throw new Error(`unsupported png file: ${name}`);
 };
 
+/**
+ * Implementaion of CLI Command: png2asm
+ */
 export const png2asm = async (conf: Conf, filePath: string): Promise<void> => {
   const aPath = path.resolve(filePath);
 
