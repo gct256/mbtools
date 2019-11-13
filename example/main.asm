@@ -1,84 +1,207 @@
+;;; bios
+WRTVDP	equ	0x0047
+FILVRM	equ	0x0056
+LDIRVM	equ	0x005c
+CHGCLR	equ	0x0062
+CLRSPR	equ	0x0069
+INIGRP	equ	0x0072
+GTTRIG	equ	0x00d8
+
+; work
+RG1SAV	equ	0xf3e0
+FORCLR	equ	0xf3e9
+BAKCLR	equ	0xf3ea
+BDRCLR	equ	0xf3eb
+
 ;;; macros
 
 ;;; rom header
 	ORG	0x4000
 	db	"AB"
-	dw	START
+	dw	start
 	ds	12
 
 ;;; functions
 
-;;; main
-START:
-	di
+;;; wait key
+wait_key:
+	; save last status
+	ld	a, (trigger)
+	ld	(trigger + 1), a
+	; check space bar
+	xor	a
+	call	GTTRIG
+	; save current status
+	ld	(trigger), a
+	; if zero, start over
+	or	a
+	jr	z, wait_key
+	; check last status
+	ld	a, (trigger + 1)
+	or	a
+	ret	z
+	jp	wait_key
 
-	; 色
-	ld	a, 0x0f
-	ld	(0xf3e9), a
-	ld	a, 0x01
-	ld	(0xf3ea), a
-	ld	a, 0x04
-	ld	(0xf3eb), a
-	call	0x0062
+;;; clear sprite generator
+clear_sprite:
+	ld	hl, 0x3800
+	ld	bc, 0x0800
+	xor	a
+	call	FILVRM
+	call	CLRSPR
+	ret
 
-	; SCREEN 2
-	call 0x0072
+;;; test for js2asm
 
-	; 16x16
-	ld	a, (0xf3e0)
-	or	0x42
+;;; test for png2asm sprite_8
+test_sprite_8:
+	call	INIGRP
+	call	clear_sprite
+
+	; use 8x8, no zoom
+	ld	a, (RG1SAV)
+	and	11111101b
 	ld	b, a
 	ld	c, 1
-	call	0x0047
+	call	WRTVDP
 
-	; SCREEN2のパターン
-	ld	bc, SC_2C - SC_2
-	ld	de, 0x0000
-	ld	hl, SC_2
-	call	0x005c
+	; load sprite
+	ld	bc, sprite_8_end - sprite_8
+	ld	de, 0x3800 ; sprite generator table
+	ld	hl, sprite_8
+	call	LDIRVM
 
-	; ; SCREEN2の色
-	ld	bc, DATA_ED - SC_2C
-	ld	de, 0x2000
-	ld	hl, SC_2C
-	call	0x005c
+	; put sprite
+	ld	bc, sprite_8_attribute_end - sprite_8_attribute
+	ld	de, 0x1b00 ; sprite attribute table
+	ld	hl, sprite_8_attribute
+	call	LDIRVM
 
-	; スプライト
-	ld	bc, SC_2 - SPR_8
-	ld	de, 0x3800
-	ld	hl, SPR_8
-	call	0x005c
+	ret
 
-	ld	bc, SPR_ED - SPR_AT
-	ld	de, 0x1b00
-	ld	hl, SPR_AT
-	call	0x005c
+;;; test for png2asm sprite_16
+test_sprite_16:
+	call	INIGRP
+	call	clear_sprite
 
-	jr	$
+	; use 16x16, no zoom
+	ld	a, (RG1SAV)
+	or	00000010b
+	ld	b, a
+	ld	c, 1
+	call	WRTVDP
 
-JS_BOOL:
+	call	CLRSPR
+
+	; load sprite
+	ld	bc, sprite_16_end - sprite_16
+	ld	de, 0x3800 ; sprite generator table
+	ld	hl, sprite_16
+	call	LDIRVM
+
+	; put sprite
+	ld	bc, sprite_16_attribute_end - sprite_16_attribute
+	ld	de, 0x1b00 ; sprite attribute table
+	ld	hl, sprite_16_attribute
+	call	LDIRVM
+
+	ret
+
+;;; test for png2asm screen_2
+test_screen_2:
+	call	INIGRP
+	call	clear_sprite
+
+	; load pattern
+	ld	bc, screen_2_end - screen_2
+	ld	de, 0x0000 ; pattern name table
+	ld	hl, screen_2
+	call	LDIRVM
+
+	; load color
+	ld	bc, screen_2_color_end - screen_2_color
+	ld	de, 0x2000 ; color table
+	ld	hl, screen_2_color
+	call	LDIRVM
+
+	ret
+
+;;; main
+start:
+	; init color
+	ld	a, 0x0f
+	ld	(FORCLR), a
+	ld	a, 0x04
+	ld	(BAKCLR), a
+	ld	a, 0x07
+	ld	(BDRCLR), a
+	call	CHGCLR
+
+loop:
+	call	test_sprite_8
+	call	wait_key
+	call	test_sprite_16
+	call	wait_key
+	call	test_screen_2
+	call	wait_key
+	jp	loop
+
+js_bool:
 	include './js/booleanArray.js.inc'
-JS_NUM:
+js_bool_end:
+
+js_num:
 	include './js/numberArray.js.inc'
-JS_STR:
+js_num_end:
+
+js_str:
 	include './js/stringArray.js.inc'
-JS_ARY:
+js_str_end:
+
+js_array:
 	include './js/typedArray.js.inc'
+js_array_end:
 
-SPR_8:
+sprite_8:
 	include './png/sample.msx_sprite_8.png.inc'
-SPR_16:
-	include './png/sample.msx_sprite_16.png.inc'
-SC_2:
-	include './png/sample.msx_screen_2.png.inc'
-SC_2C:
-	include './png/sample.msx_screen_2.png.colors.inc'
-DATA_ED:
+sprite_8_end:
 
-SPR_AT:
-	DB	0x40, 0x00, 0, 0x0f
-	DB	0x50, 0x10, 4, 0x0e
-SPR_ED:
+sprite_16:
+	include './png/sample.msx_sprite_16.png.inc'
+sprite_16_end:
+
+screen_2:
+	include './png/sample.msx_screen_2.png.inc'
+screen_2_end:
+screen_2_color:
+	include './png/sample.msx_screen_2.png.colors.inc'
+screen_2_color_end:
+
+sprite_8_attribute:
+	db	0x00, 0x00, 0, 0x02
+	db	0x00, 0x10, 1, 0x05
+	db	0x00, 0x20, 2, 0x08
+	db	0x00, 0x30, 3, 0x0a
+	db	0x10, 0x00, 0, 0x03
+	db	0x10, 0x10, 1, 0x07
+	db	0x10, 0x20, 2, 0x09
+	db	0x10, 0x30, 3, 0x0b
+sprite_8_attribute_end:
+
+sprite_16_attribute:
+	db	0x00, 0x00, 0, 0x02
+	db	0x00, 0x20, 4, 0x05
+	db	0x00, 0x40, 8, 0x08
+	db	0x00, 0x60, 12, 0x0a
+	db	0x20, 0x00, 0, 0x03
+	db	0x20, 0x20, 4, 0x07
+	db	0x20, 0x40, 8, 0x09
+	db	0x20, 0x60, 12, 0x0b
+sprite_16_attribute_end:
 
 ;;; work
-WORK:	ORG	0xc000
+my_work:
+	ORG	0xc000
+
+trigger:
+	db	0, 0
