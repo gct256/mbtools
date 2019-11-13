@@ -3,6 +3,7 @@ import { RGBA } from 'jimp';
 import { PatternMap } from '../modules/PatternMap';
 import { asmUtils } from '../utils/asmUtils';
 import { colorUtils } from '../utils/colorUtils';
+import { sortUtils } from '../utils/sortUtils';
 
 import { Png2AsmResult } from './utils';
 
@@ -18,12 +19,17 @@ export const msxScreen2 = async (
   const patterns: number[] = [];
   const colors: number[] = [];
   const converter = (color: RGBA): number =>
-    colorUtils.getNealyColorCode(color, colorUtils.TMS9918ColorSet);
+    color.a < 127
+      ? 0
+      : colorUtils.getNealyColorCode(color, colorUtils.TMS9918ColorSet);
+
+  const compare = ([, a]: [number, number], [, b]: [number, number]): number =>
+    sortUtils.compare(b, a);
 
   for (let row = 0; row < rowCount; row += 1) {
     for (let col = 0; col < colCount; col += 1) {
       for (let y = 0; y < patternHeight; y += 1) {
-        const c = patternMap.getColors(
+        const lineColors = patternMap.getColors(
           col * patternWidth,
           row * patternHeight + y,
           patternWidth,
@@ -31,9 +37,17 @@ export const msxScreen2 = async (
           converter,
         );
 
-        // 二色に正規化
-        const c0 = c[0];
-        const c1 = c.find((x) => x !== c0) || 1;
+        // sort by color count
+        const counts = [
+          ...lineColors.reduce(
+            (c, x) => c.set(x, (c.get(x) || 0) + 1),
+            new Map<number, number>(),
+          ),
+        ].sort(compare);
+
+        // use first 2 color
+        const c0 = counts.length > 0 ? counts[0][0] : 0;
+        const c1 = counts.length > 1 ? counts[1][0] : 0;
 
         colors.push(c0 * 16 + c1);
 
